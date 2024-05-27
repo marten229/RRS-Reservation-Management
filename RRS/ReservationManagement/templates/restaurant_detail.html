@@ -1,0 +1,19 @@
+<!-- restaurant_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ restaurant.name }}</title>
+</head>
+<body>
+    <h1>{{ restaurant.name }}</h1>
+    <p>{{ restaurant.beschreibung }}</p>
+    <p>{{ restaurant.adresse }}</p>
+    <p>{{ restaurant.telefon_nummer }}</p>
+    <p>{{ restaurant.email }}</p>
+    <p>{{ restaurant.website }}</p>
+    <p>{{ restaurant.öffnungszeiten }}</p>
+    <!-- Button zum Anlegen einer Reservierung -->
+    <a href="{% url 'create-reservation' restaurant.pk %}">Reservierung anlegen</a>
+    <a href="{% url 'restaurant-list' %}">Zurück zur Übersicht</a>
+</body>
+</html>
