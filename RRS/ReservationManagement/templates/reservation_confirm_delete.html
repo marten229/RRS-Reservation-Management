@@ -1,0 +1,9 @@
+{% block content %}
+  <h1>Reservierung stornieren</h1>
+  <p>Möchten Sie die Reservierung wirklich stornieren?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Ja, stornieren</button>
+    <a href="{% url 'reservation-list' %}" class="btn">Abbrechen</a>
+  </form>
+{% endblock %}

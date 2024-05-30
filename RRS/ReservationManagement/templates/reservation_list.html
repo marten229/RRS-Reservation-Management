@@ -1,0 +1,12 @@
+{% block content %}
+  <h1>Meine Reservierungen</h1>
+  <ul>
+    {% for reservation in reservations %}
+      <li>
+        {{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }}
+        <a href="{% url 'reservation-edit' reservation.pk %}">Bearbeiten</a>
+        <a href="{% url 'reservation-delete' reservation.pk %}">Stornieren</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

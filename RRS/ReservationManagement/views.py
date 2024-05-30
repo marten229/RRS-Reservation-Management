@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
-from .models import Restaurant, User
+from .models import Restaurant, User, Reservation
 from .forms import ReservationForm
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
+dummy_user, created = User.objects.get_or_create(username='dummy_user', defaults={'email': 'dummy@example.com', 'password': 'dummy_password'})
 # View für die Übersicht aller Restaurants
 class RestaurantListView(ListView):
     model = Restaurant
-    template_name = 'restaurant_list.html'  # Pfad zur Template-Datei für die Übersicht
+    template_name = 'restaurant_list.html'
     context_object_name = 'restaurants'
 
     def get_queryset(self):
@@ -14,7 +17,7 @@ class RestaurantListView(ListView):
 
 class RestaurantDetailView(DetailView):
     model = Restaurant
-    template_name = 'restaurant_detail.html'  # Pfad zur Template-Datei für die Detailansicht
+    template_name = 'restaurant_detail.html'  
     context_object_name = 'restaurant'
 
     def get_object(self):
@@ -23,7 +26,7 @@ class RestaurantDetailView(DetailView):
     
 class RestaurantDetailView(DetailView):
     model = Restaurant
-    template_name = 'restaurant_detail.html'  # Pfad zur Template-Datei für die Detailansicht
+    template_name = 'restaurant_detail.html'
     context_object_name = 'restaurant'
 
     def get_object(self):
@@ -32,7 +35,6 @@ class RestaurantDetailView(DetailView):
 
 def create_reservation(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
-    dummy_user, created = User.objects.get_or_create(username='dummy_user', defaults={'email': 'dummy@example.com', 'password': 'dummy_password'})
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
@@ -44,4 +46,27 @@ def create_reservation(request, pk):
     else:
         form = ReservationForm()
     return render(request, 'create_reservation.html', {'form': form, 'restaurant': restaurant})
+
+class ReservationListView(ListView):
+    model = Reservation
+    template_name = 'reservation_list.html'
+    context_object_name = 'reservations'
+
+    def get_queryset(self):
+        return Reservation.objects.filter(user=dummy_user)#self.request.user)
+
+class ReservationUpdateView(UpdateView):
+    model = Reservation
+    form_class = ReservationForm
+    template_name = 'reservation_form.html'
+    context_object_name = 'reservation'
+
+    def get_success_url(self):
+        return reverse_lazy('reservation-list')
+
+class ReservationDeleteView(DeleteView):
+    model = Reservation
+    template_name = 'reservation_confirm_delete.html'
+    context_object_name = 'reservation'
+    success_url = reverse_lazy('reservation-list')
 
