@@ -24,7 +24,7 @@ class User(models.Model):
 
 class Reservation(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
     email = models.EmailField()
     telefon_nummer = models.CharField(max_length=15)

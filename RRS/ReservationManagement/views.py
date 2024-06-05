@@ -40,7 +40,8 @@ def create_reservation(request, pk):
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.restaurant = restaurant
-            reservation.user = dummy_user
+            if request.user.is_authenticated:
+                reservation.user = request.user
             reservation.save()
             return redirect('restaurant-detail', pk=restaurant.pk)
     else:
