@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from .models import Restaurant, User, Reservation
-from .forms import ReservationForm
+from .forms import ReservationForm, ReservationFormLoggedIn
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 
-dummy_user, created = User.objects.get_or_create(username='dummy_user', defaults={'email': 'dummy@example.com', 'password': 'dummy_password'})
+#dummy_user, created = User.objects.get_or_create(username='dummy_user', defaults={'email': 'dummy@example.com', 'password': 'dummy_password'})
 # View für die Übersicht aller Restaurants
 class RestaurantListView(ListView):
     model = Restaurant
@@ -36,7 +36,10 @@ class RestaurantDetailView(DetailView):
 def create_reservation(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     if request.method == 'POST':
-        form = ReservationForm(request.POST)
+        if request.user.is_authenticated:
+            form = ReservationFormLoggedIn(request.POST)
+        else:
+            form = ReservationForm(request.POST)
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.restaurant = restaurant
@@ -45,7 +48,10 @@ def create_reservation(request, pk):
             reservation.save()
             return redirect('restaurant-detail', pk=restaurant.pk)
     else:
-        form = ReservationForm()
+        if request.user.is_authenticated:
+            form = ReservationFormLoggedIn()
+        else:
+            form = ReservationForm()
     return render(request, 'create_reservation.html', {'form': form, 'restaurant': restaurant})
 
 class ReservationListView(ListView):
@@ -54,7 +60,7 @@ class ReservationListView(ListView):
     context_object_name = 'reservations'
 
     def get_queryset(self):
-        return Reservation.objects.filter(user=dummy_user)#self.request.user)
+        return Reservation.objects.filter(user=self.request.user)
 
 class ReservationUpdateView(UpdateView):
     model = Reservation
