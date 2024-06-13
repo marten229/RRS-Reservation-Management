@@ -1,0 +1,22 @@
+<!-- reservations.html -->
+{% extends 'base.html' %}
+
+{% block title %}Reservierungen{% endblock %}
+
+{% block content %}
+<div class="reservations-container">
+    <h2>Heutige zukünftige Reservierungen</h2>
+    <hr>
+    {% if today_reservations %}
+        <ul>
+            {% for reservation in today_reservations %}
+                <li>{{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }} Uhr für {{ reservation.anzahl_an_gästen }} Gäste</li>
+                <li>Anmerkungen: {{reservation.anmerkungen}}</li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Keine zukünftigen oder akutellen Reservierungen für heute.</p>
+    {% endif %}
+</div>
+{% endblock %}

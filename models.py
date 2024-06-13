@@ -13,7 +13,9 @@ class Reservation(models.Model):
     telefon_nummer = models.CharField(max_length=15)
     datum = models.DateField()
     uhrzeit = models.TimeField()
+    dauer = models.IntegerField()
     anzahl_an_gästen = models.PositiveIntegerField()
+    anmerkungen = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.name} - {self.datum} at {self.uhrzeit}"

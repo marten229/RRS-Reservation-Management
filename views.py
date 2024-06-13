@@ -4,6 +4,7 @@ from .models import Restaurant, User, Reservation
 from .forms import ReservationForm, ReservationFormLoggedIn
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.utils import timezone
 
 #dummy_user, created = User.objects.get_or_create(username='dummy_user', defaults={'email': 'dummy@example.com', 'password': 'dummy_password'})
 # View für die Übersicht aller Restaurants
@@ -77,3 +78,22 @@ class ReservationDeleteView(DeleteView):
     context_object_name = 'reservation'
     success_url = reverse_lazy('reservation-list')
 
+
+
+def reservations_view(request, pk):
+    restaurant = get_object_or_404(Restaurant, id=pk)
+    now = timezone.localtime()
+    current_time = now.time()
+    current_date = now.date()
+
+    today_reservations = Reservation.objects.filter(
+        restaurant=restaurant,
+        datum=current_date,
+        uhrzeit__gte=current_time
+    )
+
+    context = {
+        'restaurant': restaurant,
+        'today_reservations': today_reservations
+    }
+    return render(request, 'reservations.html', context)
