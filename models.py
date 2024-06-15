@@ -3,6 +3,7 @@ from RestaurantManagement.models import Restaurant
 from UserManagement.models import User
 from MarketingFunctions.models import SpecialOffer
 from RestaurantManagement.models import MenuItem
+from django.utils import timezone
 # Create your models here.
 ####
 ####
@@ -20,8 +21,8 @@ class Reservation(models.Model):
     anmerkungen = models.TextField(blank=True)
     rabattcode = models.ForeignKey(SpecialOffer, on_delete=models.SET_NULL, null=True, blank=True)
     gerichte = models.ManyToManyField(MenuItem, blank=True)
-    buchungsdatum = models.DateField()
-    buchungsuhrzeit = models.TimeField()
+    buchungsdatum = models.DateField(default=timezone.now().date())
+    buchungsuhrzeit = models.TimeField(default=timezone.now().time())
 
     def __str__(self):
         return f"{self.name} - {self.datum} at {self.uhrzeit}"
