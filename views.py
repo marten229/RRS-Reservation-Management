@@ -5,9 +5,11 @@ from .forms import ReservationForm, ReservationFormLoggedIn
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.utils import timezone
+from django.db.models import Avg
 from TableManagement.functions import is_a_table_available_with_size
 from django.contrib import messages
 from MarketingFunctions.models import SpecialOffer, Event
+from ReviewFeedbackSystem.models import Bewertung
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -27,7 +29,28 @@ class RestaurantDetailView(DetailView):
         restaurant = self.get_object()
         context['special_offers'] = SpecialOffer.objects.filter(restaurant=restaurant)
         context['events'] = Event.objects.filter(restaurant=restaurant)
+
+        bewertungen = Bewertung.objects.filter(restaurant=restaurant)
+        
+        durchschnittliche_bewertung_gesamt = bewertungen.aggregate(Avg('bewertung_gesamt'))['bewertung_gesamt__avg'] or 0
+        durchschnittliche_bewertung_service = bewertungen.aggregate(Avg('bewertung_service'))['bewertung_service__avg'] or 0
+        durchschnittliche_bewertung_essen = bewertungen.aggregate(Avg('bewertung_essen'))['bewertung_essen__avg'] or 0
+        durchschnittliche_bewertung_ambiente = bewertungen.aggregate(Avg('bewertung_ambiente'))['bewertung_ambiente__avg'] or 0
+        anzahl_bewertungen = bewertungen.count()
+
+        volle_sterne = int(durchschnittliche_bewertung_gesamt)
+        halber_stern = durchschnittliche_bewertung_gesamt - volle_sterne >= 0.5
+        
+        context['durchschnittliche_bewertung_gesamt'] = durchschnittliche_bewertung_gesamt
+        context['durchschnittliche_bewertung_service'] = durchschnittliche_bewertung_service
+        context['durchschnittliche_bewertung_essen'] = durchschnittliche_bewertung_essen
+        context['durchschnittliche_bewertung_ambiente'] = durchschnittliche_bewertung_ambiente
+        context['anzahl_bewertungen'] = anzahl_bewertungen
+        context['volle_sterne'] = volle_sterne
+        context['halber_stern'] = halber_stern
+        context['bewertungen'] = bewertungen
         return context
+
 
 
 def create_reservation(request, pk):

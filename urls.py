@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import RestaurantListView, RestaurantDetailView, create_reservation, ReservationListView, ReservationUpdateView, ReservationDeleteView
+from ReviewFeedbackSystem.views import bewertung_abgeben
 
 urlpatterns = [
     path('restaurants/', RestaurantListView.as_view(), name='restaurant-list'),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('reservations/', ReservationListView.as_view(), name='reservation-list'),
     path('reservations/<int:pk>/edit/', ReservationUpdateView.as_view(), name='reservation-edit'),
     path('reservations/<int:pk>/delete/', ReservationDeleteView.as_view(), name='reservation-delete'),
+    path('restaurants/<int:pk>/bewertung/', bewertung_abgeben, name='create-bewertung'),
 ]
