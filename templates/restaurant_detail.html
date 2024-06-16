@@ -158,7 +158,6 @@
             <p>
                 <a href="{% url 'create-reservation' restaurant.pk %}" class="btn">Reservierung anlegen</a>
                 <a href="{% url 'create-bewertung' restaurant.pk %}" class="btn">Bewertung abgeben</a>
-                <a href="{% url 'restaurant-list' %}" class="btn">Zurück zur Übersicht</a>
             </p>
         </div>
 
@@ -205,6 +204,23 @@
                 <p>Keine aktuellen Angebote.</p>
             {% endfor %}
         </div>
+
+        <div class="container-section">
+            <h2>Aktuelle Promotions</h2>
+            {% for promotion in promotions %}
+                <div>
+                    <h3>{{ promotion.name }}</h3>
+                    <p>{{ promotion.description }}</p>
+                    <p><strong>Art:</strong> {{ promotion.get_promotion_type_display }}</p>
+                    {% if promotion.value %}
+                        <p><strong>Anzahl:</strong> {{ promotion.value }}</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>Keine aktuellen Promotions.</p>
+            {% endfor %}
+        </div>
+
 
         <div class="container-section">
             <h2>Bewertungen</h2>

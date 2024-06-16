@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db.models import Avg
 from TableManagement.functions import is_a_table_available_with_size
 from django.contrib import messages
-from MarketingFunctions.models import SpecialOffer, Event
+from MarketingFunctions.models import SpecialOffer, Event, Promotion
 from ReviewFeedbackSystem.models import Bewertung
 from django.contrib.auth.decorators import login_required
 from UserManagement.decorators import role_and_restaurant_required
@@ -31,6 +31,7 @@ class RestaurantDetailView(DetailView):
         restaurant = self.get_object()
         context['special_offers'] = SpecialOffer.objects.filter(restaurant=restaurant)
         context['events'] = Event.objects.filter(restaurant=restaurant)
+        context['promotions'] = Promotion.objects.filter(restaurant=restaurant, active=True)
 
         bewertungen = Bewertung.objects.filter(restaurant=restaurant)
         
