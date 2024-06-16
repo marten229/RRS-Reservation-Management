@@ -10,6 +10,8 @@ from TableManagement.functions import is_a_table_available_with_size
 from django.contrib import messages
 from MarketingFunctions.models import SpecialOffer, Event
 from ReviewFeedbackSystem.models import Bewertung
+from django.contrib.auth.decorators import login_required
+from UserManagement.decorators import role_and_restaurant_required
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -118,7 +120,8 @@ class ReservationDeleteView(DeleteView):
     success_url = reverse_lazy('reservation-list')
 
 
-
+@login_required
+@role_and_restaurant_required(['administrator', 'restaurant_owner', 'restaurant_staff'])
 def reservations_view(request, pk):
     restaurant = get_object_or_404(Restaurant, id=pk)
     now = timezone.localtime()
