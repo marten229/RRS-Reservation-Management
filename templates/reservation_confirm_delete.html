@@ -1,9 +1,65 @@
-{% block content %}
-  <h1>Reservierung stornieren</h1>
-  <p>Möchten Sie die Reservierung wirklich stornieren?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Ja, stornieren</button>
-    <a href="{% url 'reservation-list' %}" class="btn">Abbrechen</a>
-  </form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservierung stornieren</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        button[type="submit"], .btn {
+            background-color: #d9534f;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        button[type="submit"]:hover, .btn:hover {
+            background-color: #c9302c;
+        }
+        .btn {
+            background-color: #5bc0de;
+        }
+        .btn:hover {
+            background-color: #31b0d5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reservierung stornieren</h1>
+        <p>Möchten Sie die Reservierung wirklich stornieren?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Ja, stornieren</button>
+            <a href="{% url 'reservation-list' %}" class="btn">Abbrechen</a>
+        </form>
+    </div>
+</body>
+</html>

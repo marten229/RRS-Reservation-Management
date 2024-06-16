@@ -1,12 +1,91 @@
-{% block content %}
-  <h1>Meine Reservierungen</h1>
-  <ul>
-    {% for reservation in reservations %}
-      <li>
-        {{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }}
-        <a href="{% url 'reservation-edit' reservation.pk %}">Bearbeiten</a>
-        <a href="{% url 'reservation-delete' reservation.pk %}">Stornieren</a>
-      </li>
-    {% endfor %}
-  </ul>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine Reservierungen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .reservation-list {
+            list-style: none;
+            padding: 0;
+        }
+        .reservation-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .reservation-item p {
+            margin: 0;
+            color: #666;
+        }
+        .reservation-item a {
+            color: #5bc0de;
+            text-decoration: none;
+            margin-left: 10px;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .reservation-item a:hover {
+            color: #31b0d5;
+        }
+        .back-button {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meine Reservierungen</h1>
+        <ul class="reservation-list">
+            {% for reservation in reservations %}
+            <li class="reservation-item">
+                <p>{{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }}</p>
+                <div>
+                    <a href="{% url 'reservation-edit' reservation.pk %}">Bearbeiten</a>
+                    <a href="{% url 'reservation-delete' reservation.pk %}">Stornieren</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'startpage' %}" class="back-button">Zurück zur Startseite</a>
+    </div>
+</body>
+</html>

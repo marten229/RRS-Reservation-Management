@@ -67,7 +67,7 @@ def create_reservation(request, pk):
             time = form.cleaned_data['uhrzeit']
             duration = form.cleaned_data['dauer']
             party_size = form.cleaned_data['anzahl_an_gästen']
-            
+            print(date, time, duration, party_size)
             if restaurant.check_ifopendayandtime(date, time):
                 available_tables = is_a_table_available_with_size(restaurant, date, time, duration, party_size)
                 if available_tables.exists():
