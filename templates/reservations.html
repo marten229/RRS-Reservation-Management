@@ -1,4 +1,3 @@
-<!-- reservations.html -->
 {% extends 'base.html' %}
 
 {% block title %}Reservierungen{% endblock %}
@@ -10,13 +9,20 @@
     {% if today_reservations %}
         <ul>
             {% for reservation in today_reservations %}
-                <li>{{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }} Uhr für {{ reservation.anzahl_an_gästen }} Gäste</li>
-                <li>Anmerkungen: {{reservation.anmerkungen}}</li>
+                <li>
+                    {% if reservation.name %}
+                        {{ reservation.name }}
+                    {% else %}
+                        {{ reservation.user.get_full_name }}
+                    {% endif %}
+                    - {{ reservation.datum }} um {{ reservation.uhrzeit }} Uhr für {{ reservation.anzahl_an_gästen }} Gäste
+                </li>
+                <p>Anmerkungen: {{reservation.anmerkungen}}</p>
                 <hr>
             {% endfor %}
         </ul>
     {% else %}
-        <p>Keine zukünftigen oder akutellen Reservierungen für heute.</p>
+        <p>Keine zukünftigen oder aktuellen Reservierungen für heute.</p>
     {% endif %}
 </div>
 {% endblock %}

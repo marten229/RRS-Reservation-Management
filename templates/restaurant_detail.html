@@ -145,6 +145,9 @@
     <div class="container">
         <h1>{{ restaurant.name }}</h1>
         <div class="restaurant-info">
+            {%if restaurant.photo%}
+            <img src="{{ restaurant.photo.url }}" alt="{{ restaurant.name }}" style="max-width: 20%; border-radius: 8px;">
+            {%endif%}
             <p><strong>Beschreibung:</strong> {{ restaurant.description }}</p>
             <p><strong>Adresse:</strong> {{ restaurant.street }}, {{ restaurant.house_number }}, {{ restaurant.city }}</p>
             <p><strong>Telefon:</strong> {{ restaurant.contact_phone }}</p>

@@ -77,7 +77,7 @@
         <ul class="reservation-list">
             {% for reservation in reservations %}
             <li class="reservation-item">
-                <p>{{ reservation.name }} - {{ reservation.datum }} um {{ reservation.uhrzeit }}</p>
+                <p>{{ reservation.restaurant }} - {{ reservation.datum }} um {{ reservation.uhrzeit }}</p>
                 <div>
                     <a href="{% url 'reservation-edit' reservation.pk %}">Bearbeiten</a>
                     <a href="{% url 'reservation-delete' reservation.pk %}">Stornieren</a>

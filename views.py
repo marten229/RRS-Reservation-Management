@@ -12,6 +12,9 @@ from MarketingFunctions.models import SpecialOffer, Event, Promotion
 from ReviewFeedbackSystem.models import Bewertung
 from django.contrib.auth.decorators import login_required
 from UserManagement.decorators import role_and_restaurant_required
+from django.core.mail import send_mail, BadHeaderError
+from django.conf import settings
+from django.http import HttpResponse
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -68,7 +71,7 @@ def create_reservation(request, pk):
             time = form.cleaned_data['uhrzeit']
             duration = form.cleaned_data['dauer']
             party_size = form.cleaned_data['anzahl_an_gästen']
-            print(date, time, duration, party_size)
+
             if restaurant.check_ifopendayandtime(date, time):
                 available_tables = is_a_table_available_with_size(restaurant, date, time, duration, party_size)
                 if available_tables.exists():
@@ -84,7 +87,17 @@ def create_reservation(request, pk):
                         f"im Restaurant {reservation.restaurant.name}. Ihre Buchungsnummer lautet {reservation.pk}."
                     )
                     messages.success(request, confirmation_message)
-                    
+
+                    send_mail('Reservation', confirmation_message, settings.EMAIL_HOST_USER, [request.user.email])
+
+                    staff_emails = restaurant.staff_members.filter(role='restaurant_staff').values_list('email', flat=True)
+                    staff_message = (
+                        f"Neue Reservierung im Restaurant {restaurant.name}.\n\n"
+                        f"Details:\nDatum: {reservation.datum}\nUhrzeit: {reservation.uhrzeit}\n"
+                        f"Anzahl der Gäste: {reservation.anzahl_an_gästen}\nBuchungsnummer: {reservation.pk}."
+                    )
+                    send_mail('Neue Reservierung', staff_message, settings.EMAIL_HOST_USER, staff_emails)
+
                     return redirect('restaurant-detail', pk=restaurant.pk)
                 else:
                     form.add_error(None, 'Kein verfügbarer Tisch für die angegebene Zeit und Gruppengröße')
@@ -107,18 +120,48 @@ class ReservationListView(ListView):
 
 class ReservationUpdateView(UpdateView):
     model = Reservation
-    form_class = ReservationForm
+    form_class = ReservationFormLoggedIn
     template_name = 'reservation_form.html'
     context_object_name = 'reservation'
 
     def get_success_url(self):
         return reverse_lazy('reservation-list')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        reservation = form.instance
+        restaurant = reservation.restaurant
+
+        staff_emails = restaurant.staff_members.filter(role='restaurant_staff').values_list('email', flat=True)
+        staff_message = (
+            f"Die Reservierung im Restaurant {restaurant.name} wurde aktualisiert.\n\n"
+            f"Neue Details:\nDatum: {reservation.datum}\nUhrzeit: {reservation.uhrzeit}\n"
+            f"Anzahl der Gäste: {reservation.anzahl_an_gästen}\nBuchungsnummer: {reservation.pk}."
+        )
+        send_mail('Aktualisierte Reservierung', staff_message, settings.EMAIL_HOST_USER, staff_emails)
+
+        return response
+
 class ReservationDeleteView(DeleteView):
     model = Reservation
     template_name = 'reservation_confirm_delete.html'
     context_object_name = 'reservation'
     success_url = reverse_lazy('reservation-list')
+
+    def delete(self, request, *args, **kwargs):
+        reservation = self.get_object()
+        restaurant = reservation.restaurant
+        response = super().delete(request, *args, **kwargs)
+
+        staff_emails = restaurant.staff_members.filter(role='restaurant_staff').values_list('email', flat=True)
+        staff_message = (
+            f"Die Reservierung im Restaurant {restaurant.name} wurde storniert.\n\n"
+            f"Details der stornierten Reservierung:\nDatum: {reservation.datum}\nUhrzeit: {reservation.uhrzeit}\n"
+            f"Anzahl der Gäste: {reservation.anzahl_an_gästen}\nBuchungsnummer: {reservation.pk}."
+        )
+        send_mail('Stornierte Reservierung', staff_message, settings.EMAIL_HOST_USER, staff_emails)
+
+        return response
 
 
 @login_required
