@@ -15,6 +15,7 @@ from UserManagement.decorators import role_and_restaurant_required
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.http import HttpResponse
+from RestaurantManagement.models import MenuItem
 
 class RestaurantListView(ListView):
     model = Restaurant
@@ -35,6 +36,7 @@ class RestaurantDetailView(DetailView):
         context['special_offers'] = SpecialOffer.objects.filter(restaurant=restaurant)
         context['events'] = Event.objects.filter(restaurant=restaurant)
         context['promotions'] = Promotion.objects.filter(restaurant=restaurant, active=True)
+        context['menu_items'] = MenuItem.objects.filter(restaurant=restaurant)
 
         bewertungen = Bewertung.objects.filter(restaurant=restaurant)
         
@@ -63,9 +65,9 @@ def create_reservation(request, pk):
     restaurant = get_object_or_404(Restaurant, pk=pk)
     if request.method == 'POST':
         if request.user.is_authenticated:
-            form = ReservationFormLoggedIn(request.POST)
+            form = ReservationFormLoggedIn(request.POST, restaurant=restaurant)
         else:
-            form = ReservationForm(request.POST)
+            form = ReservationForm(request.POST, restaurant=restaurant)
         if form.is_valid():
             date = form.cleaned_data['datum']
             time = form.cleaned_data['uhrzeit']
@@ -85,6 +87,9 @@ def create_reservation(request, pk):
                     confirmation_message = (
                         f"Reservierung bestätigt für den {reservation.datum} um {reservation.uhrzeit} "
                         f"im Restaurant {reservation.restaurant.name}. Ihre Buchungsnummer lautet {reservation.pk}."
+                        f"Wir würden uns freuen, wenn sie nach ihrem Besuch eine Bewertung innerhalb 48 Stunden abgeben würden."
+                        f"Diese können sie auf der Restaurantseite machen."
+                        f"Wir freuen uns auf Ihren Besuch!"
                     )
                     messages.success(request, confirmation_message)
 
@@ -105,9 +110,9 @@ def create_reservation(request, pk):
                 form.add_error(None, 'Das Restaurant ist zu dieser Zeit geschlossen')
     else:
         if request.user.is_authenticated:
-            form = ReservationFormLoggedIn()
+            form = ReservationFormLoggedIn(restaurant=restaurant)
         else:
-            form = ReservationForm()
+            form = ReservationForm(restaurant=restaurant)
     return render(request, 'create_reservation.html', {'form': form, 'restaurant': restaurant})
 
 class ReservationListView(ListView):
