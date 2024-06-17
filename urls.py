@@ -3,11 +3,5 @@ from .views import RestaurantListView, RestaurantDetailView, create_reservation,
 from ReviewFeedbackSystem.views import bewertung_abgeben
 
 urlpatterns = [
-    path('restaurants/', RestaurantListView.as_view(), name='restaurant-list'),
-    #path('restaurants/<int:pk>/', RestaurantDetailView.as_view(), name='restaurant-detail'),
-    #path('restaurants/<int:pk>/reservation/', create_reservation, name='create-reservation'),
-    #path('reservations/', ReservationListView.as_view(), name='reservation-list'),
-    path('reservations/<int:pk>/edit/', ReservationUpdateView.as_view(), name='reservation-edit'),
-    path('reservations/<int:pk>/delete/', ReservationDeleteView.as_view(), name='reservation-delete'),
-    path('restaurants/<int:pk>/bewertung/', bewertung_abgeben, name='create-bewertung'),
+
 ]
