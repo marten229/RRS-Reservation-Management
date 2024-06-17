@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ restaurant.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            text-align: center;
+        }
+        .restaurant-info {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+        .restaurant-info p {
+            margin: 0;
+            padding: 5px 0;
+        }
+        .restaurant-info a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .restaurant-info a:hover {
+            text-decoration: underline;
+        }
+        .container-section {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+        .container-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: #fff !important;  /* Schriftfarbe auf Weiß setzen */
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .star-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .star-rating .star {
+            color: #FFD700;
+            font-size: 25px;
+        }
+        .rating-value {
+            margin-left: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        .review-count {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .review-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .review-item .user-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .review-item .review-stars {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .review-item .review-stars .star {
+            color: #FFD700;
+            font-size: 16px;
+        }
+        .review-item .review-stars .star.grey {
+            color: #ccc;
+        }
+        .review-item p {
+            margin: 10px 0;
+            color: #333;
+        }
+        .review-item small {
+            color: #888;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleReviews() {
+            var hiddenReviews = document.getElementById("hidden-reviews");
+            var toggleButton = document.getElementById("toggle-reviews-btn");
+            if (hiddenReviews.classList.contains("hidden")) {
+                hiddenReviews.classList.remove("hidden");
+                toggleButton.innerText = "Weniger anzeigen";
+            } else {
+                hiddenReviews.classList.add("hidden");
+                toggleButton.innerText = "Mehr anzeigen";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ restaurant.name }}</h1>
+        <div class="restaurant-info">
+            {%if restaurant.photo%}
+            <img src="{{ restaurant.photo.url }}" alt="{{ restaurant.name }}" style="max-width: 40%; border-radius: 8px;">
+            {%endif%}
+            <p><strong>Beschreibung:</strong> {{ restaurant.description }}</p>
+            <p><strong>Adresse:</strong> {{ restaurant.street }}, {{ restaurant.house_number }}, {{ restaurant.city }}</p>
+            <p><strong>Telefon:</strong> {{ restaurant.contact_phone }}</p>
+            <p><strong>Email:</strong> {{ restaurant.contact_email }}</p>
+            <p><strong>Öffnungszeiten:</strong> {{ restaurant.opening_time }} - {{ restaurant.closing_time }}</p>
+            <p><strong>Öffnungstage:</strong> 
+                {% for day in restaurant.opening_days.all %}
+                    {{ day.get_day_display }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p>
+                <a href="{% url 'create-reservation' restaurant.pk %}" class="btn">Reservierung anlegen</a>
+                <a href="{% url 'create-bewertung' restaurant.pk %}" class="btn">Bewertung abgeben</a>
+            </p>
+        </div>
+
+        <div class="container-section">
+            <h2>Speisekarte</h2>
+            {% for item in menu_items %}
+                <div>
+                    <h3>{{ item.name }}</h3>
+                    <p><strong>Preis:</strong> {{ item.price }}€</p>
+                </div>
+            {% empty %}
+                <p>Keine Speisekarte verfügbar.</p>
+            {% endfor %}
+        </div>
+
+        <div class="container-section">
+            <h2>Aktuelle Events</h2>
+            {% for event in events %}
+                <div>
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description }}</p>
+                    <p><strong>Startdatum:</strong> {{ event.start_date }}</p>
+                    <p><strong>Enddatum:</strong> {{ event.end_date }}</p>
+                    <p><strong>Bedingungen:</strong> {{ event.terms_conditions }}</p>
+                </div>
+            {% empty %}
+                <p>Keine aktuellen Events.</p>
+            {% endfor %}
+        </div>
+
+        <div class="container-section">
+            <h2>Aktuelle Angebote</h2>
+            {% for offer in special_offers %}
+                <div>
+                    <h3>{{ offer.title }}</h3>
+                    <p>{{ offer.description }}</p>
+                    <p><strong>Rabattcode:</strong> {{ offer.code }}</p>
+                    <p><strong>Rabatt:</strong> {{ offer.discount_rate }}%</p>
+                    <p><strong>Startdatum:</strong> {{ offer.start_date }}</p>
+                    <p><strong>Enddatum:</strong> {{ offer.end_date }}</p>
+                    <p><strong>Bedingungen:</strong> {{ offer.terms_conditions }}</p>
+                </div>
+            {% empty %}
+                <p>Keine aktuellen Angebote.</p>
+            {% endfor %}
+        </div>
+
+        <div class="container-section">
+            <h2>Aktuelle Promotions</h2>
+            {% for promotion in promotions %}
+                <div>
+                    <h3>{{ promotion.name }}</h3>
+                    <p>{{ promotion.description }}</p>
+                    <p><strong>Art:</strong> {{ promotion.get_promotion_type_display }}</p>
+                    {% if promotion.value %}
+                        <p><strong>Anzahl:</strong> {{ promotion.value }}</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>Keine aktuellen Promotions.</p>
+            {% endfor %}
+        </div>
+
+
+        <div class="container-section">
+            <h2>Bewertungen</h2>
+            <div class="star-rating">
+                {% with durchschnittliche_bewertung_gesamt|floatformat:1 as rating %}
+                    {% for i in "12345" %}
+                        {% if i <= rating %}
+                            <span class="star">&#9733;</span>
+                        {% elif i == rating|floatformat:0 %}
+                            <span class="star">&#9733;</span>
+                        {% else %}
+                            <span class="star">&#9734;</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
+                <span class="rating-value">{{ durchschnittliche_bewertung_gesamt|floatformat:1 }}</span>
+                <span class="review-count">({{ anzahl_bewertungen }} Bewertungen)</span>
+            </div>
+
+            <div id="bewertungen-container">
+                {% for bewertung in bewertungen|slice:":3" %}
+                    <div class="review-item">
+                        <div class="user-name">{{ bewertung.user.username }}</div>
+
+                        <div class="review-stars">
+                            <strong>Gesamterlebnis:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_gesamt %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Service:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_service %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Essenqualität:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_essen %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Ambiente:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_ambiente %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <p>{{ bewertung.kommentar }}</p>
+                        <small>{{ bewertung.created_at }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="hidden-reviews" class="hidden">
+                {% for bewertung in bewertungen|slice:"3:" %}
+                    <div class="review-item">
+                        <div class="user-name">{{ bewertung.user.username }}</div>
+
+                        <div class="review-stars">
+                            <strong>Gesamterlebnis:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_gesamt %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Service:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_service %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Essenqualität:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_essen %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="review-stars">
+                            <strong>Ambiente:</strong>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= bewertung.bewertung_ambiente %}
+                                    <span class="star">&#9733;</span>
+                                {% else %}
+                                    <span class="star grey">&#9734;</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <p>{{ bewertung.kommentar }}</p>
+                        <small>{{ bewertung.created_at }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+            <button id="toggle-reviews-btn" class="btn" onclick="toggleReviews()">Mehr anzeigen</button>
+        </div>
+    </div>
+</body>
+</html>

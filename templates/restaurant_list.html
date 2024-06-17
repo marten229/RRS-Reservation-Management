@@ -1,0 +1,15 @@
+<!-- restaurant_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Übersicht</title>
+</head>
+<body>
+    <h1>Restaurant Übersicht</h1>
+    <ul>
+        {% for restaurant in restaurants %}
+            <li><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
